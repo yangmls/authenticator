@@ -1,5 +1,5 @@
-import electron from 'electron';
-import menubar from 'menubar';
+const electron = require('electron');
+const menubar = require('menubar');
 
 const app = electron.app;
 const globalShortcut = electron.globalShortcut;

@@ -1,5 +1,4 @@
 import React from 'react';
-import moment from 'moment';
 
 import { getToken } from '../helpers';
 
@@ -45,16 +44,12 @@ export default class Item extends React.Component {
 
     componentDidMount() {
         const next = () => {
-            var now = moment().unix();
-            var n = moment().startOf('minute').unix() + 60;
-            var left = n - now;
-
             setTimeout(() => {
+                next();
                 this.setState({
                     token: getToken(this.props.model.key)
                 });
-                next();
-            }, left * 1000);
+            }, 1000);
         }
 
         next();

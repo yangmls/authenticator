@@ -12,8 +12,7 @@
   "author": "Clive Young",
   "license": "MIT",
   "dependencies": {
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.7.7",
-    "babel-register": "^6.7.2",
+    "electron-prebuilt": "^0.37.8",
     "menubar": "^4.1.0"
   },
   "devDependencies": {
@@ -22,11 +21,9 @@
     "babel-preset-react": "^6.5.0",
     "css-loader": "^0.23.1",
     "electron-packager": "^7.0.1",
-    "electron-prebuilt": "^0.37.8",
     "file-loader": "^0.8.5",
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
-    "moment": "^2.13.0",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "react-redux": "^4.4.5",
