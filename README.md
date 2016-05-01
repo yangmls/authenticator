@@ -11,17 +11,18 @@ Google authenticator for desktop
 
 how to develop?
 
-    npm install
-    #start electron app
-    npm start
-    #run webpack dev server
-    npm run dev
+```shell
+npm install
+npm start # start electron app
+npm run dev # run webpack dev server
+```
 
 how to build
 
+```shell
     npm install
-    #run webpack and electron package
-    npm run build
+    npm run build #run webpack and electron package
+```
 
 # TODO
 
