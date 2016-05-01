@@ -5,20 +5,23 @@ Google authenticator for desktop
 
 * add a secret and comment, the token will be shown on the menubar
 
-* press control + 1/2/3 will copy the token into clipboard
+* press ⌃ + 1/2/3 to copy the token into clipboard
 
 # How to run
 
 how to develop?
 
     npm install
-    npm start # start electron app
-    npm run dev # run webpack dev server
+    #start electron app
+    npm start
+    #run webpack dev server
+    npm run dev
 
 how to build
 
     npm install
-    npm run build # run webpack and electron package
+    #run webpack and electron package
+    npm run build
 
 # TODO
 
