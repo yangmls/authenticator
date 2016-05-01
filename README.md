@@ -20,8 +20,8 @@ npm run dev # run webpack dev server
 how to build
 
 ```shell
-    npm install
-    npm run build #run webpack and electron package
+npm install
+npm run build #run webpack and electron package
 ```
 
 # TODO
