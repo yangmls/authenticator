@@ -23,6 +23,22 @@ menu.on('ready', () => {
     globalShortcut.register('Control+3', () => {
         menu.window.webContents.send('key', 2);
     });
+
+    globalShortcut.register('Option+1', () => {
+        menu.window.webContents.send('keyPassword', 0);
+    });
+
+    globalShortcut.register('Option+2', () => {
+        menu.window.webContents.send('keyPassword', 1);
+    });
+
+    globalShortcut.register('Option+3', () => {
+        menu.window.webContents.send('keyPassword', 2);
+    });
+
+    globalShortcut.register('Control+0', () => {
+        menu.window.webContents.send('password', '');
+    });
 });
 
 ipcMain.on('copy', (event, arg) => {

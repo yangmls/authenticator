@@ -9,6 +9,24 @@ export default class App extends React.Component {
             <div className="window">
                 <header className="toolbar taoolbar-header">
                     <h1 className="title">两步验证</h1>
+
+                    <div className="toolbar-actions">
+                        <button className="btn btn-default"
+                            onClick={() => {
+                                hashHistory.push('/settings')
+                            }}>
+                            <span className="icon icon-home"></span>
+                            设置
+                        </button>
+
+                        <button className="btn btn-default pull-right"
+                            onClick={() => {
+                                hashHistory.push('/add')
+                            }}>
+                            <span className="icon icon-plus"></span>
+                            增加
+                        </button>
+                    </div>
                 </header>
 
                 <div className="window-content">
@@ -17,18 +35,11 @@ export default class App extends React.Component {
 
                 <footer className="toolbar toolbar-footer">
                     <div className="toolbar-actions">
-                        <button type="button" className="btn btn-default"
+                        <button type="button" className="btn btn-default pull-right"
                             onClick={() => {
                                 electron.ipcRenderer.send('exit');
                             }}>
                             退出
-                        </button>
-
-                        <button type="button" className="btn btn-primary pull-right"
-                            onClick={() => {
-                                hashHistory.push('/add')
-                            }}>
-                            增加
                         </button>
                     </div>
                 </footer>

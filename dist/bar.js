@@ -72,7 +72,11 @@
 
 	var _KeyForm2 = _interopRequireDefault(_KeyForm);
 
-	var _reducers = __webpack_require__(295);
+	var _SettingsForm = __webpack_require__(295);
+
+	var _SettingsForm2 = _interopRequireDefault(_SettingsForm);
+
+	var _reducers = __webpack_require__(297);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -85,7 +89,7 @@
 	var store = (0, _redux.createStore)(_reducers2.default, state);
 
 	store.subscribe(function () {
-	    state = store.getState();
+	    var state = store.getState();
 	    localStorage.setItem('state', JSON.stringify(state));
 	});
 
@@ -99,13 +103,14 @@
 	            _reactRouter.Route,
 	            { path: '/', component: _App2.default },
 	            _react2.default.createElement(_reactRouter.IndexRoute, { component: _Dashboard2.default }),
-	            _react2.default.createElement(_reactRouter.Route, { path: 'add', component: _KeyForm2.default })
+	            _react2.default.createElement(_reactRouter.Route, { path: 'add', component: _KeyForm2.default }),
+	            _react2.default.createElement(_reactRouter.Route, { path: 'settings', component: _SettingsForm2.default })
 	        )
 	    )
 	), document.getElementById('app'));
 
 	electron.ipcRenderer.on('key', function (event, message) {
-	    state = store.getState();
+	    var state = store.getState();
 	    var key = state.keys[message];
 
 	    if (!key) {
@@ -114,6 +119,42 @@
 
 	    var token = (0, _helpers.getToken)(state.keys[message].key);
 	    electron.ipcRenderer.send('copy', token);
+	});
+
+	electron.ipcRenderer.on('keyPassword', function (event, message) {
+	    var state = store.getState();
+	    var key = state.keys[message];
+
+	    if (!key) {
+	        return;
+	    }
+
+	    if (!state.settings) {
+	        return;
+	    }
+
+	    if (!state.settings.password) {
+	        return;
+	    }
+
+	    var password = state.settings.password;
+	    var token = (0, _helpers.getToken)(state.keys[message].key);
+	    electron.ipcRenderer.send('copy', password + token);
+	});
+
+	electron.ipcRenderer.on('password', function (event, message) {
+	    var state = store.getState();
+
+	    if (!state.settings) {
+	        return;
+	    }
+
+	    if (!state.settings.password) {
+	        return;
+	    }
+
+	    var password = state.settings.password;
+	    electron.ipcRenderer.send('copy', password);
 	});
 
 /***/ },
@@ -27652,6 +27693,28 @@
 	                        'h1',
 	                        { className: 'title' },
 	                        '两步验证'
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'toolbar-actions' },
+	                        _react2.default.createElement(
+	                            'button',
+	                            { className: 'btn btn-default',
+	                                onClick: function onClick() {
+	                                    _reactRouter.hashHistory.push('/settings');
+	                                } },
+	                            _react2.default.createElement('span', { className: 'icon icon-home' }),
+	                            '设置'
+	                        ),
+	                        _react2.default.createElement(
+	                            'button',
+	                            { className: 'btn btn-default pull-right',
+	                                onClick: function onClick() {
+	                                    _reactRouter.hashHistory.push('/add');
+	                                } },
+	                            _react2.default.createElement('span', { className: 'icon icon-plus' }),
+	                            '增加'
+	                        )
 	                    )
 	                ),
 	                _react2.default.createElement(
@@ -27667,19 +27730,11 @@
 	                        { className: 'toolbar-actions' },
 	                        _react2.default.createElement(
 	                            'button',
-	                            { type: 'button', className: 'btn btn-default',
+	                            { type: 'button', className: 'btn btn-default pull-right',
 	                                onClick: function onClick() {
 	                                    electron.ipcRenderer.send('exit');
 	                                } },
 	                            '退出'
-	                        ),
-	                        _react2.default.createElement(
-	                            'button',
-	                            { type: 'button', className: 'btn btn-primary pull-right',
-	                                onClick: function onClick() {
-	                                    _reactRouter.hashHistory.push('/add');
-	                                } },
-	                            '增加'
 	                        )
 	                    )
 	                )
@@ -34082,7 +34137,6 @@
 	    value: true
 	});
 	var ADD_KEY = exports.ADD_KEY = 'ADD_KEY';
-	var REMOVE_KEY = exports.REMOVE_KEY = 'REMOVE_KEY';
 
 	var addKey = exports.addKey = function addKey(key, comment) {
 	    return {
@@ -34092,10 +34146,21 @@
 	    };
 	};
 
+	var REMOVE_KEY = exports.REMOVE_KEY = 'REMOVE_KEY';
+
 	var removeKey = exports.removeKey = function removeKey(id) {
 	    return {
 	        type: REMOVE_KEY,
 	        id: id
+	    };
+	};
+
+	var SET_PASSWORD = exports.SET_PASSWORD = 'SET_PASSWORD';
+
+	var setPassword = exports.setPassword = function setPassword(password) {
+	    return {
+	        type: SET_PASSWORD,
+	        password: password
 	    };
 	};
 
@@ -34238,21 +34303,148 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _SettingsForm = __webpack_require__(296);
+
+	var _SettingsForm2 = _interopRequireDefault(_SettingsForm);
+
+	var _reactRedux = __webpack_require__(246);
+
+	var _reactRouter = __webpack_require__(172);
+
+	var _actions = __webpack_require__(292);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var mapStateToProps = function mapStateToProps(state) {
+	    return {
+	        password: state.settings.password
+	    };
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	    return {
+	        onSubmit: function onSubmit(password) {
+	            dispatch((0, _actions.setPassword)(password));
+	            _reactRouter.hashHistory.push('/');
+	        },
+	        onCancel: function onCancel() {
+	            _reactRouter.hashHistory.push('/');
+	        }
+	    };
+	};
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_SettingsForm2.default);
+
+/***/ },
+/* 296 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(5);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SettingsForm = function (_React$Component) {
+	    _inherits(SettingsForm, _React$Component);
+
+	    function SettingsForm() {
+	        _classCallCheck(this, SettingsForm);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(SettingsForm).apply(this, arguments));
+	    }
+
+	    _createClass(SettingsForm, [{
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+
+	            return _react2.default.createElement(
+	                'form',
+	                { style: { padding: '10px' }, onSubmit: function onSubmit(e) {
+	                        e.preventDefault();
+	                        _this2.props.onSubmit(_this2.refs.password.value);
+	                    } },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'form-group' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        '密码'
+	                    ),
+	                    _react2.default.createElement('input', { type: 'password',
+	                        className: 'form-control',
+	                        defaultValue: this.props.password,
+	                        ref: 'password' })
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'form-actions' },
+	                    _react2.default.createElement(
+	                        'button',
+	                        { onClick: this.props.onCancel, type: 'button',
+	                            className: 'btn btn-form btn-default' },
+	                        '取消'
+	                    ),
+	                    _react2.default.createElement(
+	                        'button',
+	                        { type: 'submit', className: 'btn btn-form btn-primary' },
+	                        '保存'
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return SettingsForm;
+	}(_react2.default.Component);
+
+	exports.default = SettingsForm;
+
+/***/ },
+/* 297 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
 	var _redux = __webpack_require__(233);
 
-	var _keys = __webpack_require__(296);
+	var _keys = __webpack_require__(298);
 
 	var _keys2 = _interopRequireDefault(_keys);
 
+	var _settings = __webpack_require__(299);
+
+	var _settings2 = _interopRequireDefault(_settings);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	exports.default = (0, _redux.combineReducers)({ keys: _keys2.default });
+	exports.default = (0, _redux.combineReducers)({ keys: _keys2.default, settings: _settings2.default });
 
 /***/ },
-/* 296 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34290,6 +34482,38 @@
 	};
 
 	exports.default = keys;
+
+/***/ },
+/* 299 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _actions = __webpack_require__(292);
+
+	var actions = _interopRequireWildcard(_actions);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	var settings = function settings() {
+	    var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	    var action = arguments[1];
+
+	    switch (action.type) {
+	        case actions.SET_PASSWORD:
+	            return {
+	                password: action.password
+	            };
+	        default:
+	            return state;
+	    }
+	};
+
+	exports.default = settings;
 
 /***/ }
 /******/ ]);

@@ -9,6 +9,7 @@ import { Provider } from 'react-redux'
 import App from './components/App'
 import Dashboard from './containers/Dashboard'
 import KeyForm from './containers/KeyForm'
+import SettingsForm from './containers/SettingsForm'
 
 import reducers from './reducers'
 
@@ -19,7 +20,7 @@ let state = JSON.parse(localStorage.getItem('state') || '{}')
 const store = createStore(reducers, state)
 
 store.subscribe(() => {
-    state = store.getState()
+    let state = store.getState()
     localStorage.setItem('state', JSON.stringify(state))
 });
 
@@ -29,6 +30,7 @@ render(
         <Route path="/" component={App}>
             <IndexRoute component={Dashboard} />
             <Route path="add" component={KeyForm} />
+            <Route path="settings" component={SettingsForm} />
         </Route>
     </Router>
     </Provider>,
@@ -36,7 +38,7 @@ render(
 );
 
 electron.ipcRenderer.on('key', (event, message) => {
-    state = store.getState();
+    let state = store.getState();
     let key = state.keys[message];
 
     if (!key) {
@@ -45,4 +47,40 @@ electron.ipcRenderer.on('key', (event, message) => {
 
     let token = getToken(state.keys[message].key)
     electron.ipcRenderer.send('copy', token)
+});
+
+electron.ipcRenderer.on('keyPassword', (event, message) => {
+    let state = store.getState();
+    let key = state.keys[message];
+
+    if (!key) {
+        return
+    }
+
+    if (!state.settings) {
+        return
+    }
+
+    if (!state.settings.password) {
+        return
+    }
+
+    let password = state.settings.password
+    let token = getToken(state.keys[message].key)
+    electron.ipcRenderer.send('copy', password + token)
+});
+
+electron.ipcRenderer.on('password', (event, message) => {
+    let state = store.getState();
+
+    if (!state.settings) {
+        return
+    }
+
+    if (!state.settings.password) {
+        return
+    }
+
+    let password = state.settings.password
+    electron.ipcRenderer.send('copy', password)
 });
